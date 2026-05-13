@@ -30,7 +30,7 @@ Both guides are unified into a single vector database so every query searches ac
 
 ## Example Questions It Can Answer
 
-- "How do I configure a career site for multiple languages?"
+- "How do I configure a career site with multiple languages?"
 - "What roles and privileges are needed to approve a job offer?"
 - "How does candidate selection process automation work?"
 - "What is the difference between a disqualification question and a prescreening question?"
