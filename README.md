@@ -1,75 +1,105 @@
-# Oracle HCM Recruiting Cloud — RAG Assistant
+# Oracle HCM Recruiting — RAG Knowledge Base
 
-A domain-specific Retrieval-Augmented Generation (RAG) system built over Oracle HCM Cloud's official Recruiting module documentation. Enables consultants and administrators to query 1,500+ pages of Oracle Recruiting documentation using natural language.
+## Project Overview
+This project implements a **Retrieval-Augmented Generation (RAG)** system over Oracle HCM Cloud's Recruiting module documentation. The goal is to enable natural-language querying of the Oracle HCM Implementing Recruiting guide — allowing HR admins, implementors, and business analysts to get precise, context-aware answers without reading 450 pages of documentation.
 
-## What It Does
-Instead of searching through hundreds of pages of Oracle documentation, consultants can ask plain English questions and get precise, sourced answers instantly.
+## Source Document
+- **Title:** Oracle Fusion Cloud Talent Management — Implementing Recruiting  
+- **Version:** G34431-09 (2026)  
+- **Pages:** 450  
+- **Author:** Viviane Filloles, Oracle Corporation
 
-**Example questions it can answer:**
+## Repository Structure
+```
+oracle-hcm-recruiting-rag/
+│
+├── data/
+│   ├── oracle_hcm_recruiting_rag.md          # Humanized full-text (Markdown, ~1MB)
+│   └── oracle_hcm_recruiting_rag_chunks.json # Structured chunks with metadata (JSON)
+│
+├── notebooks/
+│   └── rag_pipeline.ipynb                    # End-to-end RAG demo (to be added)
+│
+├── src/
+│   └── ingest.py                             # Chunk loading + embedding script (to be added)
+│
+└── README.md
+```
+
+## Data Format
+
+### JSON Chunks (`oracle_hcm_recruiting_rag_chunks.json`)
+Each chunk contains:
+```json
+{
+  "chunk_id": "OHR-REC-0051",
+  "chapter": "Career Sites",
+  "section": "Configure a Career Site",
+  "content": "You configure external career sites by enabling and configuring different options...",
+  "source": "Oracle HCM Cloud Implementing Recruiting (2026)"
+}
+```
+
+### Markdown (`oracle_hcm_recruiting_rag.md`)
+Full document organized by chapter with section headers, suitable for direct ingestion into vector stores.
+
+## Stats
+- **Total chunks:** 1,191
+- **Chapters covered:** 35
+- **Avg chunk size:** ~720 characters
+- **Format:** Semantic sections aligned to Oracle's documentation structure
+
+## Chapters Covered
+| # | Chapter | Chunks |
+|---|---------|--------|
+| 1 | Overview of Recruiting | 48 |
+| 2 | Career Sites | 216 |
+| 3 | Job Application Flows | 69 |
+| 4 | Candidate Selection Processes | 57 |
+| 5 | Recruiting Content Library | 34 |
+| 6 | Notifications | 23 |
+| 7 | Candidate Messaging | 1 |
+| 8 | Job Requisition Templates | 21 |
+| 9 | Job Requisitions | 98 |
+| 10 | Prescreening Questionnaires and Questions | — |
+| 11 | Candidate Interviews | 44 |
+| 12 | Interview Feedback Questionnaires | — |
+| 13 | Candidates and Candidate Job Applications | 69 |
+| 14 | Candidate Pools | 10 |
+| 15 | Talent Community | 6 |
+| 16 | Candidate Sources | 24 |
+| 17 | Candidate Referrals | 4 |
+| 18 | Recruiting Campaigns | 11 |
+| 19 | Recruiting Agencies | 12 |
+| 20 | Job Offer Letter Templates | 29 |
+| 21 | Job Offers | 126 |
+| 22 | Grid Views | 8 |
+| 23 | Recruiting Activity Center | 62 |
+| 24 | Recruiting Features Configuration Report | — |
+| 25 | Oracle AI Apps in Recruiting | — |
+| 26 | Dynamic Skills in Recruiting | — |
+| 27 | Opportunity Marketplace | 36 |
+| 28–35 | Lookups, Geography, Security, etc. | 100+ |
+
+## RAG Pipeline (Planned)
+1. **Embed** chunks using `text-embedding-3-small` (OpenAI) or `nomic-embed-text` (local)
+2. **Store** in a vector DB — ChromaDB (local) or Pinecone (cloud)
+3. **Query** via LangChain or LlamaIndex with a Claude/GPT backbone
+4. **Answer** with cited chunk IDs for traceability
+
+## Use Cases
 - "How do I configure a career site for multiple languages?"
 - "What roles are needed to approve a job offer?"
-- "How does candidate selection process automation work?"
+- "How does the candidate selection process automation work?"
 - "What is the difference between a disqualification question and a prescreening question?"
-- "How does a recruiter fill a requisition automatically?"
+- "How do I enable LinkedIn Apply on a career site?"
 
-## Knowledge Base
-Built from two official Oracle guides (2026):
-- **Implementing Recruiting** — 1,123 chunks — system configuration and setup
-- **Using Recruiting** — 412 chunks — recruiter and end-user operations
-- **Total:** 1,527 semantic chunks across 35 modules
-
-## Tech Stack
+## Tech Stack (Planned)
 - Python 3.11+
-- OpenAI API (text-embedding-3-small + gpt-4o-mini)
-- ChromaDB (local vector database)
-- Streamlit (chat interface)
+- LangChain or LlamaIndex
+- ChromaDB / Pinecone
+- OpenAI or Anthropic API
+- Streamlit (demo UI)
 
-## Project Structure
-oracle-hcm-recruiting-rag/
-├── data/
-│   ├── oracle_hcm_recruiting_rag_chunks.json
-│   ├── oracle_hcm_recruiting_rag.md
-│   ├── oracle_hcm_using_recruiting_rag_chunks.json
-│   └── oracle_hcm_using_recruiting_rag.md
-├── src/
-│   ├── ingest.py
-│   └── app.py
-├── requirements.txt
-└── README.md
-## Setup Instructions
-
-### 1. Clone the repo
-```bash
-git clone https://github.com/YOUR-USERNAME/oracle-hcm-recruiting-rag.git
-cd oracle-hcm-recruiting-rag
-```
-
-### 2. Create virtual environment
-```bash
-python -m venv venv
-source venv/bin/activate        # Mac/Linux
-venv\Scripts\activate           # Windows
-```
-
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Add your OpenAI API key
-Create a `.env` file in the root folder:
-OPENAI_API_KEY=sk-proj-your-key-here
-### 5. Build the vector database
-```bash
-python src/ingest.py
-```
-
-### 6. Launch the app
-```bash
-streamlit run src/app.py
-```
-
-Open http://localhost:8501 in your browser.
-
-## Disclaimer
-This project uses knowledge derived from Oracle's publicly available documentation for educational and portfolio purposes. All Oracle product names and trademarks belong to Oracle Corporation. Source: docs.oracle.com
+## Author
+Built as part of a portfolio project combining ERP domain expertise (Oracle HCM) with modern AI/RAG architecture.
