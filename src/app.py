@@ -111,6 +111,21 @@ if not st.session_state.messages:
             st.session_state.messages.append(
                 {"role": "user", "content": suggestion}
             )
+            with st.chat_message("user"):
+                st.markdown(suggestion)
+            with st.chat_message("assistant"):
+                with st.spinner("Searching knowledge base..."):
+                    results = search_knowledge_base(suggestion)
+                    answer, sources = generate_answer(suggestion, results)
+                st.markdown(answer)
+                with st.expander("📚 View source chunks used"):
+                    for j, meta in enumerate(sources):
+                        st.markdown(
+                            f"**{j+1}. {meta['chapter']} → {meta['section']}**  \n"
+                            f"*{meta['source']}*  \n"
+                            f"[Oracle Documentation](https://docs.oracle.com/en/cloud/saas/talent-management/)"
+                        )
+            st.session_state.messages.append({"role": "assistant", "content": answer})
             st.rerun()
 
 # Chat input
